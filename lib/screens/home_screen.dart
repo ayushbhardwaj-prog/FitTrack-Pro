@@ -12,6 +12,22 @@ class HomeScreen extends StatelessWidget {
     required this.onWorkoutPressed,
   });
 
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return "Good Morning";
+    if (hour >= 12 && hour < 17) return "Good Afternoon";
+    if (hour >= 17 && hour < 21) return "Good Evening";
+    return "Good Night";
+  }
+
+  String getMotivation() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return "Start your day strong! 💪";
+    if (hour >= 12 && hour < 17) return "Keep the momentum going! 🔥";
+    if (hour >= 17 && hour < 21) return "Finish the day with a great workout! 🏋️";
+    return "Recovery is part of the journey. 🌙";
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<WorkoutProvider>();
@@ -31,8 +47,8 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            const Text(
-              "Good Evening 👋",
+            Text(
+              "${getGreeting()} 👋",
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -46,6 +62,17 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.grey,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              getMotivation(),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+                fontStyle: FontStyle.italic,
               ),
             ),
 

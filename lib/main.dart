@@ -40,15 +40,81 @@ class FitTrackPro extends StatelessWidget {
       themeMode: themeProvider.themeMode,
 
       theme: ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF42A5F5),
         brightness: Brightness.light,
-        primarySwatch: Colors.green,
-        useMaterial3: true,
       ),
 
+      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
+      ),
+
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(double.infinity, 52),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    ),
+
       darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.green,
         useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF42A5F5),
+          brightness: Brightness.dark,
+        ),
+
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        ),
+
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
       ),
 
       home: const MainNavigation(),
@@ -89,7 +155,7 @@ class _MainNavigationState extends State<MainNavigation> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
-        selectedItemColor: Colors.green,
+        selectedItemColor: const Color(0xFF42A5F5),
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() {
@@ -98,23 +164,23 @@ class _MainNavigationState extends State<MainNavigation> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_rounded),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center),
+            icon: Icon(Icons.fitness_center_rounded),
             label: "Workout",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
+            icon: Icon(Icons.history_rounded),
             label: "History",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.monitor_weight),
+            icon: Icon(Icons.monitor_weight_outlined),
             label: "BMI",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person_off_outlined),
             label: "Profile",
           ),
         ],
