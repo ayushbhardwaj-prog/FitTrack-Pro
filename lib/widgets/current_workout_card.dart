@@ -22,7 +22,7 @@ class CurrentWorkoutCard extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(16, 16, 16, 10),
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.green.shade700,
+            color: Colors.lightBlueAccent.shade700,
             borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
@@ -209,8 +209,8 @@ class CurrentWorkoutCard extends StatelessWidget {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.green.shade700,
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

@@ -13,7 +13,7 @@ class HistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Workout History"),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       
       actions: [
@@ -119,7 +119,7 @@ class HistoryScreen extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     child: ListTile(
                       leading: const CircleAvatar(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.blue,
                         child: Icon(
                           Icons.fitness_center,
                           color: Colors.white,

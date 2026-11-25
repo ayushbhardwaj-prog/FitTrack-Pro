@@ -59,20 +59,20 @@ WorkoutSession({
     double volume = 0;
 
     for (final exercise in exercises) {
-      volume += exercise.weight * exercise.sets * exercise.reps;
+      volume += exercise.totalVolume;
     }
 
     return volume;
   }
   int get totalSets {
-  int sets = 0;
+    int total = 0;
 
-  for (final exercise in exercises) {
-    sets += exercise.sets;
+    for (final exercise in exercises) {
+      total += exercise.totalSets;
+    }
+
+    return total;
   }
-
-  return sets;
-}
 int get durationMinutes {
   if (endTime == null) return 0;
 

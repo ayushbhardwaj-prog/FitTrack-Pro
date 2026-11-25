@@ -25,11 +25,13 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   late final List<Widget> pages = [
-    const HomeScreen(),
-    const WorkoutScreen(),
-    const HistoryScreen(),
-    const ProfileScreen(),
-  ];
+  HomeScreen(
+    onWorkoutPressed: () => changeTab(1),
+  ),
+  const WorkoutScreen(),
+  const HistoryScreen(),
+  const ProfileScreen(),
+];
 
   @override
   Widget build(BuildContext context) {

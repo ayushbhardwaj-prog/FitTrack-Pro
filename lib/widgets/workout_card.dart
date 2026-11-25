@@ -27,7 +27,7 @@ class WorkoutCard extends StatelessWidget {
       child: ListTile(
         leading: const Icon(
           Icons.fitness_center,
-          color: Colors.green,
+          color: Colors.blueGrey,
         ),
         title: Text(
           exercise,

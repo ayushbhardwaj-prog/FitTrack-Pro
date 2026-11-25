@@ -67,7 +67,7 @@ class _BMIScreenState extends State<BMIScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("BMI Calculator"),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -158,7 +158,7 @@ class _BMIScreenState extends State<BMIScreen> {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      Colors.green,
+                      Colors.blue,
                   foregroundColor:
                       Colors.white,
                   shape:
@@ -238,7 +238,7 @@ class _BMIScreenState extends State<BMIScreen> {
 
                         Icon(
                           Icons.favorite,
-                          color: Colors.green,
+                          color: Colors.blue,
                         ),
 
                         SizedBox(width: 8),

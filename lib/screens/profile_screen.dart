@@ -12,10 +12,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final nameController = TextEditingController(text: "Ayush");
-  final ageController = TextEditingController(text: "21");
-  final heightController = TextEditingController(text: "179");
-  final weightController = TextEditingController(text: "88");
+
+  //--------------------------------------------------
+  // Controllers
+  //--------------------------------------------------
+
+  final TextEditingController nameController =
+      TextEditingController();
+
+  //--------------------------------------------------
+  // State Variables
+  //--------------------------------------------------
+
+  String selectedGender = "Male";
+
+  String selectedAge = "21";
+
+  String selectedHeight = "179";
+
+  String selectedWeight = "88";
+
+  //--------------------------------------------------
+  // Init
+  //--------------------------------------------------
 
   @override
   void initState() {
@@ -23,76 +42,280 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loadData();
   }
 
+  //--------------------------------------------------
+  // Dispose
+  //--------------------------------------------------
+
   @override
   void dispose() {
     nameController.dispose();
-    ageController.dispose();
-    heightController.dispose();
-    weightController.dispose();
     super.dispose();
   }
 
+  //--------------------------------------------------
+  // Load Profile
+  //--------------------------------------------------
+
   Future<void> loadData() async {
-    final prefs = await SharedPreferences.getInstance();
 
-    nameController.text = prefs.getString("name") ?? "Ayush";
-    ageController.text = prefs.getString("age") ?? "21";
-    heightController.text = prefs.getString("height") ?? "179";
-    weightController.text = prefs.getString("weight") ?? "88";
+    final prefs =
+        await SharedPreferences.getInstance();
 
-    setState(() {});
+    setState(() {
+
+      nameController.text =
+          prefs.getString("name") ?? "Ayush";
+
+      selectedGender =
+          prefs.getString("gender") ?? "Male";
+
+      selectedAge =
+          prefs.getString("age") ?? "21";
+
+      selectedHeight =
+          prefs.getString("height") ?? "179";
+
+      selectedWeight =
+          prefs.getString("weight") ?? "88";
+
+    });
+
   }
 
-  Future<void> saveData() async {
-    final prefs = await SharedPreferences.getInstance();
+  //--------------------------------------------------
+  // Save Profile
+  //--------------------------------------------------
 
-    await prefs.setString("name", nameController.text);
-    await prefs.setString("age", ageController.text);
-    await prefs.setString("height", heightController.text);
-    await prefs.setString("weight", weightController.text);
+  Future<void> saveData() async {
+
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    await prefs.setString(
+      "name",
+      nameController.text,
+    );
+
+    await prefs.setString(
+      "gender",
+      selectedGender,
+    );
+
+    await prefs.setString(
+      "age",
+      selectedAge,
+    );
+
+    await prefs.setString(
+      "height",
+      selectedHeight,
+    );
+
+    await prefs.setString(
+      "weight",
+      selectedWeight,
+    );
 
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
+
       const SnackBar(
-        content: Text("Profile Saved Successfully! ✅"),
-        backgroundColor: Colors.green,
+
+        content: Text(
+          "Profile Saved Successfully! ✅",
+        ),
+
+        backgroundColor: Colors.blue,
+
       ),
+
     );
+
   }
 
-  Widget buildTextField(
-    String label,
-    TextEditingController controller,
-    IconData icon,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 4,
+Widget buildTextField(
+  String title,
+  TextEditingController controller,
+  IconData icon,
+) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 22),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              prefixIcon: Icon(
-                icon,
-                color: Colors.green,
-              ),
-              labelText: label,
+        ),
+
+        const SizedBox(height: 8),
+
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              icon,
+              color: Colors.blue,
+            ),
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
           ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
+
+Widget buildDropdown({
+
+  required String title,
+
+  required String value,
+
+  required List<String> items,
+
+  required IconData icon,
+
+  required String unit,
+
+  required ValueChanged<String> onChanged,
+
+}) {
+
+  return Padding(
+
+    padding: const EdgeInsets.only(bottom: 22),
+
+    child: Column(
+
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+
+        Text(
+
+          title,
+
+          style: const TextStyle(
+
+            fontSize: 18,
+
+            fontWeight: FontWeight.bold,
+
+          ),
+
+        ),
+
+        const SizedBox(height: 8),
+
+        DropdownButtonFormField<String>(
+
+          value: items.contains(value)
+              ? value
+              : items.first,
+
+          decoration: InputDecoration(
+
+            prefixIcon: Icon(
+              icon,
+              color: Colors.blue,
+            ),
+
+            filled: true,
+
+            border: OutlineInputBorder(
+
+              borderRadius:
+                  BorderRadius.circular(16),
+
+            ),
+
+          ),
+
+          items: items.map((item) {
+
+            return DropdownMenuItem(
+
+              value: item,
+
+              child: Text(
+
+                "$item $unit",
+
+              ),
+
+            );
+
+          }).toList(),
+
+          onChanged: (newValue) {
+
+            if (newValue != null) {
+
+              onChanged(newValue);
+
+            }
+
+          },
+
+        ),
+
+      ],
+
+    ),
+
+  );
+
+}
+
+ Widget buildGenderChip(
+  String gender,
+  IconData icon,
+) {
+  final selected = selectedGender == gender;
+
+  return ChoiceChip(
+
+    avatar: Icon(
+      icon,
+      size: 18,
+      color: selected
+          ? Colors.white
+          : Colors.blue,
+    ),
+
+    label: Text(gender),
+
+    selected: selected,
+
+    selectedColor: Colors.blue,
+
+    labelStyle: TextStyle(
+      color: selected
+          ? Colors.white
+          : Colors.black,
+      fontWeight: FontWeight.bold,
+    ),
+
+    onSelected: (_) {
+
+      setState(() {
+
+        selectedGender = gender;
+
+      });
+
+    },
+
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -103,159 +326,285 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text("Profile"),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
 
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.green,
-                  width: 3,
-                ),
-              ),
-              child: CircleAvatar(
-                radius: 55,
-                backgroundColor: Colors.green,
-                child: Text(
-                  nameController.text.isEmpty
-                      ? "?"
-                      : nameController.text[0].toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 46,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          //-----------------------------------
+          // Profile Header
+          //-----------------------------------
+
+          Center(
+            child: Column(
+              children: [
+
+                CircleAvatar(
+                  radius: 55,
+                  backgroundColor: Colors.blue,
+
+                  child: Text(
+                    nameController.text.isEmpty
+                        ? "?"
+                        : nameController.text[0].toUpperCase(),
+
+                    style: const TextStyle(
+                      fontSize: 42,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+
+                const SizedBox(height: 18),
+
+                Text(
+                  nameController.text.isEmpty
+                      ? "Your Name"
+                      : nameController.text,
+
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                const Text(
+                  "Keep pushing yourself 💪",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 35),
+
+          //-----------------------------------
+          // Personal Information
+          //-----------------------------------
+
+          const Text(
+            "Personal Information",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          buildTextField(
+            "Name",
+            nameController,
+            Icons.person_outline,
+          ),
+
+          //-----------------------------------
+          // Gender
+          //-----------------------------------
+
+          const Text(
+            "Gender",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+
+              buildGenderChip(
+                "Male",
+                Icons.male,
+              ),
+
+              buildGenderChip(
+                "Female",
+                Icons.female,
+              ),
+
+              buildGenderChip(
+                "Other",
+                Icons.people_outline,
+              ),
+
+            ],
+          ),
+
+          const SizedBox(height: 25),
+
+          //-----------------------------------
+          // Age
+          //-----------------------------------
+
+          buildDropdown(
+
+            title: "Age",
+
+            value: selectedAge,
+
+            items: List.generate(
+              83,
+              (i) => "${i + 18}",
+            ),
+
+            icon: Icons.cake_outlined,
+
+            unit: "",
+
+            onChanged: (value) {
+
+              setState(() {
+
+                selectedAge = value;
+
+              });
+
+            },
+
+          ),
+
+          //-----------------------------------
+          // Height
+          //-----------------------------------
+
+          buildDropdown(
+
+            title: "Height",
+
+            value: selectedHeight,
+
+            items: List.generate(
+              151,
+              (i) => "${i + 100}",
+            ),
+
+            icon: Icons.height,
+
+            unit: "cm",
+
+            onChanged: (value) {
+
+              setState(() {
+
+                selectedHeight = value;
+
+              });
+
+            },
+
+          ),
+
+          //-----------------------------------
+          // Weight
+          //-----------------------------------
+
+          buildDropdown(
+
+            title: "Weight",
+
+            value: selectedWeight,
+
+            items: List.generate(
+              171,
+              (i) => "${i + 30}",
+            ),
+
+            icon: Icons.monitor_weight_outlined,
+
+            unit: "kg",
+
+            onChanged: (value) {
+
+              setState(() {
+
+                selectedWeight = value;
+
+              });
+
+            },
+
+          ),
+            //-----------------------------------
+      // Settings
+      //-----------------------------------
+
+            const SizedBox(height: 10),
+
+            const Text(
+              "Settings",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
             const SizedBox(height: 15),
 
-            Text(
-              nameController.text,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+            Consumer<ThemeProvider>(
+              builder: (context, themeProvider, child) {
+                return Card(
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: SwitchListTile(
+                    secondary: const Icon(
+                      Icons.dark_mode,
+                      color: Colors.blue,
+                    ),
+                    title: const Text("Dark Mode"),
+                    value: themeProvider.isDarkMode,
+                    onChanged: (value) {
+                      themeProvider.toggleTheme(value);
+                    },
+                  ),
+                );
+              },
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 35),
 
-            const Text(
-              "Keep pushing yourself 💪",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 16,
+            //-----------------------------------
+            // Save Button
+            //-----------------------------------
+
+            SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: ElevatedButton.icon(
+                onPressed: saveData,
+                icon: const Icon(Icons.save),
+                label: const Text(
+                  "Save Profile",
+                  style: TextStyle(fontSize: 18),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
               ),
             ),
 
             const SizedBox(height: 30),
 
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Personal Information",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            buildTextField(
-              "Name",
-              nameController,
-              Icons.person,
-            ),
-
-            buildTextField(
-              "Age",
-              ageController,
-              Icons.cake,
-            ),
-
-            buildTextField(
-              "Height (cm)",
-              heightController,
-              Icons.height,
-            ),
-
-            buildTextField(
-              "Weight (kg)",
-              weightController,
-              Icons.monitor_weight,
-            ),
-
-            const SizedBox(height: 10),
-
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Settings",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 15),
-                        Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 3,
-              child: SwitchListTile(
-                secondary: const Icon(
-                  Icons.dark_mode,
-                  color: Colors.green,
-                ),
-                title: const Text("Dark Mode"),
-                subtitle: const Text(
-                  "Enable dark theme",
-                ),
-                value: themeProvider.isDarkMode,
-                onChanged: (value) {
-                  themeProvider.toggleTheme(value);
-                },
-              ),
-            ),
-
-            const SizedBox(height: 25),
-
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton.icon(
-                onPressed: saveData,
-                icon: const Icon(Icons.save),
-                label: const Text(
-                  "Save Changes",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(16),
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 }
+

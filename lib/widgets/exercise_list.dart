@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
-
+import '../widgets/set_editor_dialog.dart';
+import '../providers/workout_provider.dart';
 import '../models/exercise.dart';
+import '../models/exercise_set.dart';
 
-class ExerciseList extends StatelessWidget {
-  final List<Exercise> exercises;
-  final Function(int) onDelete;
+
+class ExerciseList extends StatefulWidget {
+  final WorkoutProvider provider;
 
   const ExerciseList({
     super.key,
-    required this.exercises,
-    required this.onDelete,
+    required this.provider,
   });
+  @override
+State<ExerciseList> createState() =>
+    _ExerciseListState();
+}
+
+class _ExerciseListState
+    extends State<ExerciseList> {
+
+  final Set<int> expandedCards = {};
 
   IconData _getIcon(String day) {
     switch (day) {
@@ -52,7 +62,10 @@ class ExerciseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (exercises.isEmpty) {
+    final exercises =
+    widget.provider.currentWorkout?.exercises ?? [];
+
+      if (exercises.isEmpty) {
       return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -113,25 +126,54 @@ class ExerciseList extends StatelessWidget {
                 Row(
                   children: [
 
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor:
-                          _getColor(exercise.workoutDay),
-                      child: Icon(
-                        _getIcon(exercise.workoutDay),
-                        color: Colors.white,
-                      ),
-                    ),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(18),
+                      onTap: () {
 
-                    const SizedBox(width: 14),
+                        setState(() {
 
-                                        Expanded(
-                      child: Text(
-                        exercise.name,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          if (expandedCards.contains(index)) {
+                            expandedCards.remove(index);
+                          } else {
+                            expandedCards.add(index);
+                          }
+
+                        });
+
+                      },
+
+                      child: Row(
+                        children: [
+
+                          CircleAvatar(
+                            radius: 24,
+                            backgroundColor:
+                                _getColor(exercise.workoutDay),
+                            child: Icon(
+                              _getIcon(exercise.workoutDay),
+                              color: Colors.white,
+                            ),
+                          ),
+
+                          const SizedBox(width: 14),
+
+                          Expanded(
+                            child: Text(
+                              exercise.name,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                          Icon(
+                            expandedCards.contains(index)
+                                ? Icons.expand_less
+                                : Icons.expand_more,
+                          ),
+
+                        ],
                       ),
                     ),
                   ],
@@ -139,41 +181,220 @@ class ExerciseList extends StatelessWidget {
 
                 const SizedBox(height: 18),
 
-                Row(
+                Column(
                   children: [
+                    AnimatedCrossFade(
 
-                    Expanded(
-                      child: _buildStatChip(
-                        Icons.monitor_weight,
-                        "${exercise.weight.toStringAsFixed(1)} kg",
+                      firstChild: const SizedBox(),
+
+                      secondChild: Column(
+
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+
+                        children: [
+
+                          // <-- paste your Sets section here
+
+                          // <-- Statistics Card
+
+                          // <-- Delete Button
+
+                        ],
+
+                      ),
+
+                      crossFadeState:
+                          expandedCards.contains(index)
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+
+                      duration:
+                          const Duration(milliseconds: 300),
+
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Row(
+                        children: [
+
+                          Expanded(
+                            child: Text(
+                              "SET",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                          Expanded(
+                            child: Text(
+                              "KG",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                          Expanded(
+                            child: Text(
+                              "REPS",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                        ],
                       ),
                     ),
-                      const SizedBox(width: 10),
 
-                        Expanded(
-                          child: _buildStatChip(
-                            Icons.repeat,
-                            "${exercise.sets} Sets",
-                          ),
+                    const SizedBox(height: 8),
+
+                    ...exercise.sets.asMap().entries.map((entry) {
+
+                      final setIndex = entry.key;
+                      final set = entry.value;
+
+                      return Container(
+
+                        margin: const EdgeInsets.only(bottom: 8),
+
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
                         ),
 
-                        const SizedBox(width: 10),
-
-                        Expanded(
-                          child: _buildStatChip(
-                            Icons.tag,
-                            "${exercise.reps} Reps",
-                          ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12),
                         ),
+
+                        child: Row(
+                          children: [
+
+                            Expanded(
+                              child: Text(
+                                "${setIndex + 1}",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+
+                            Expanded(
+                              child: Text(
+                                set.weight.toStringAsFixed(1),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+
+                            Expanded(
+                              child: Text(
+                                "${set.reps}",
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      );
+
+                    }),
+
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                Card(
+                  elevation: 2,
+                  color: Colors.blue.shade50,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+
+                        _buildWorkoutStat(
+                          Icons.layers,
+                          "${exercise.totalSets}",
+                          "Sets",
+                        ),
+
+                        _buildWorkoutStat(
+                          Icons.repeat,
+                          "${exercise.totalReps}",
+                          "Reps",
+                        ),
+
+                        _buildWorkoutStat(
+                          Icons.fitness_center,
+                          "${exercise.totalVolume.toStringAsFixed(0)}",
+                          "Volume",
+                        ),
+
+                        _buildWorkoutStat(
+                          Icons.local_fire_department,
+                          "${exercise.estimatedCalories.toStringAsFixed(0)}",
+                          "kcal",
+                        ),
+
                       ],
                     ),
+                  ),
+                ),
+
+
+                const SizedBox(height: 18),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text("Add Set"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => SetEditorDialog(
+                          onSave: (newSet) {
+                            widget.provider.addSetToExercise(
+                              index,
+                              newSet,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 12),
 
                     const SizedBox(height: 18),
 
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () => onDelete(index),
+                        onPressed: () {
+                          widget.provider.deleteExercise(index);
+                        },
                         icon: const Icon(Icons.delete_outline),
                         label: const Text("Delete Exercise"),
                         style: OutlinedButton.styleFrom(
@@ -196,36 +417,39 @@ class ExerciseList extends StatelessWidget {
         );
       }
 
-      Widget _buildStatChip(
-        IconData icon,
-        String value,
-      ) {
-        return Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 12,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                color: Colors.green,
-                size: 20,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                value,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    }
+Widget _buildWorkoutStat(
+  IconData icon,
+  String value,
+  String label,
+) {
+  return Column(
+    children: [
+
+      Icon(
+        icon,
+        color: Colors.blue,
+        size: 22,
+      ),
+
+      const SizedBox(height: 6),
+
+      Text(
+        value,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      Text(
+        label,
+        style: TextStyle(
+          color: Colors.grey.shade700,
+          fontSize: 13,
+        ),
+      ),
+
+    ],
+  );
+}
+}

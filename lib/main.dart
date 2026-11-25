@@ -9,6 +9,7 @@ import 'screens/workout_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/bmi_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/auth_screen.dart';
 
 void main() {
   runApp(
@@ -34,6 +35,7 @@ class FitTrackPro extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp(
+
       debugShowCheckedModeBanner: false,
       title: "FitTrack Pro",
 
@@ -117,74 +119,7 @@ class FitTrackPro extends StatelessWidget {
         ),
       ),
 
-      home: const MainNavigation(),
-    );
-  }
-}
-
-class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
-
-  @override
-  State<MainNavigation> createState() => _MainNavigationState();
-}
-
-class _MainNavigationState extends State<MainNavigation> {
-  int selectedIndex = 0;
-
-  void openWorkoutTab() {
-    setState(() {
-      selectedIndex = 1;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: selectedIndex,
-        children: [
-          HomeScreen(
-            onWorkoutPressed: openWorkoutTab,
-          ),
-          const WorkoutScreen(),
-          const HistoryScreen(),
-          const BMIScreen(),
-          const ProfileScreen(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        selectedItemColor: const Color(0xFF42A5F5),
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_rounded),
-            label: "Workout",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history_rounded),
-            label: "History",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.monitor_weight_outlined),
-            label: "BMI",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_off_outlined),
-            label: "Profile",
-          ),
-        ],
-      ),
+      home: const AuthGate(),
     );
   }
 }

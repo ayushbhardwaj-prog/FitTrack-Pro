@@ -36,7 +36,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             child: const ListTile(
               leading: Icon(
                 Icons.circle,
-                color: Colors.green,
+                color: Color.fromARGB(255, 35, 52, 66),
               ),
               title: Text("Light"),
               subtitle: Text("≈ 4 kcal/min"),
@@ -82,7 +82,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(
       content: Text("Workout saved successfully! 💪"),
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.blue,
     ),
   );
 }
@@ -95,7 +95,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 43, 67, 87),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(24),
@@ -121,12 +121,12 @@ Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
       title: const Text("Workout"),
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
     ),
 
     floatingActionButton: FloatingActionButton.extended(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.blue,
       icon: Icon(
         provider.workoutStarted
             ? Icons.add
@@ -162,8 +162,7 @@ Widget build(BuildContext context) {
 
         Expanded(
           child: ExerciseList(
-            exercises: provider.currentWorkout?.exercises ?? [],
-            onDelete: deleteExercise,
+            provider: provider,
           ),
         ),
       ],

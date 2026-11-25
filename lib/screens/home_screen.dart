@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("FitTrack Pro"),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -119,7 +119,7 @@ class HomeScreen extends StatelessWidget {
 
                     ListTile(
                       leading: const CircleAvatar(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.blue,
                         child: Icon(
                           Icons.fitness_center,
                           color: Colors.white,
@@ -207,7 +207,7 @@ class HomeScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(.10),
+                        color: Colors.blue.withOpacity(.10),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: const Row(
@@ -215,7 +215,7 @@ class HomeScreen extends StatelessWidget {
 
                           Icon(
                             Icons.trending_up,
-                            color: Colors.green,
+                            color: Colors.blue,
                           ),
 
                           SizedBox(width: 10),
@@ -273,7 +273,7 @@ class HomeScreen extends StatelessWidget {
 
                   const CircleAvatar(
                     radius: 28,
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.blue,
                     child: Icon(
                       Icons.fitness_center,
                       color: Colors.white,
@@ -304,14 +304,14 @@ class HomeScreen extends StatelessWidget {
                             vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(.15),
+                            color: Colors.blue.withOpacity(.15),
                             borderRadius:
                                 BorderRadius.circular(30),
                           ),
                           child: const Text(
                             "Latest Workout",
                             style: TextStyle(
-                              color: Colors.green,
+                              color: Colors.blue,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -333,7 +333,7 @@ class HomeScreen extends StatelessWidget {
                     Icons.sports_gymnastics,
                     "${lastWorkout.totalExercises}",
                     "Exercises",
-                    Colors.green,
+                    Colors.blue,
                   ),
 
                   _buildChip(
@@ -383,7 +383,7 @@ SizedBox(
       ),
     ),
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
     ),
     onPressed: onWorkoutPressed,
