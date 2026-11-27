@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -80,9 +79,7 @@ class _AuthScreenState extends State<AuthScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _isRegister
-                ? 'Account created successfully!'
-                : 'Welcome back!',
+            _isRegister ? 'Account created successfully!' : 'Welcome back!',
           ),
         ),
       );
@@ -104,6 +101,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cloudError = context.watch<WorkoutProvider>().cloudError;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -123,10 +121,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   const Text(
                     'FitTrack Pro',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -137,6 +132,14 @@ class _AuthScreenState extends State<AuthScreen> {
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 32),
+                  if (cloudError != null) ...[
+                    Text(
+                      cloudError,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
 
                   TextFormField(
                     controller: _emailController,
@@ -194,13 +197,9 @@ class _AuthScreenState extends State<AuthScreen> {
                         ? const SizedBox(
                             height: 22,
                             width: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(
-                            _isRegister ? 'Create Account' : 'Login',
-                          ),
+                        : Text(_isRegister ? 'Create Account' : 'Login'),
                   ),
                   const SizedBox(height: 12),
 

@@ -1,0 +1,60 @@
+services:
+  api1:
+    build: .
+    container_name: fittrack-api-1
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_PATH: /data/fittrack.db
+    ports:
+      - "127.0.0.1:8001:8000"
+    volumes:
+      - fittrack_data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  api2:
+    build: .
+    container_name: fittrack-api-2
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_PATH: /data/fittrack.db
+    ports:
+      - "127.0.0.1:8002:8000"
+    volumes:
+      - fittrack_data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    container_name: fittrack-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  worker:
+    build: .
+    container_name: fittrack-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python worker.py
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  fittrack_data:
+  redis_data:

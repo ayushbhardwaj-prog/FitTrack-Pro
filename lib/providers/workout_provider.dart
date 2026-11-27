@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -40,6 +39,31 @@ class WorkoutProvider extends ChangeNotifier {
   Future<void> loadHistory() async {
     try {
       await cloud.loadToken();
+
+      if (cloud.isLoggedIn) {
+        accountEmail = cloud.accountEmail;
+        final tokenAccountScope = cloud.accountScope;
+        storage.setAccount(tokenAccountScope);
+        if (cloud.restoredFromLegacyToken) {
+          await storage.migrateAccount('default', tokenAccountScope);
+        }
+        try {
+          await cloud.currentUser();
+          if (cloud.accountScope != tokenAccountScope) {
+            await storage.migrateAccount(tokenAccountScope, cloud.accountScope);
+          }
+          storage.setAccount(cloud.accountScope);
+          accountEmail = cloud.accountEmail;
+        } on SessionExpiredException {
+          accountEmail = null;
+          cloudError = 'Your session expired. Please log in again.';
+        } on CloudException catch (e) {
+          // Keep the saved session and local data available while offline.
+          cloudError = e.message;
+        }
+      } else {
+        storage.setAccount('default');
+      }
 
       history.clear();
       history.addAll(await storage.loadHistory());
@@ -95,18 +119,26 @@ class WorkoutProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final pendingDeletes = await storage.loadPendingDeletes();
+      for (final id in pendingDeletes.toList()) {
+        await cloud.deleteWorkout(id);
+        pendingDeletes.remove(id);
+        await storage.savePendingDeletes(pendingDeletes);
+      }
+
       final cloudHistory = await cloud.fetchWorkouts();
 
       // Keep local workouts that are not yet present in the cloud.
       final cloudKeys = cloudHistory.map(_workoutKey).toSet();
 
-      final localOnly = history.where(
-        (workout) => !cloudKeys.contains(_workoutKey(workout)),
-      ).toList();
+      final localOnly = history
+          .where((workout) => !cloudKeys.contains(_workoutKey(workout)))
+          .toList();
 
       // Upload local-only workouts.
       for (final workout in localOnly) {
-        await cloud.uploadWorkout(workout);
+        workout.cloudId = await cloud.uploadWorkout(workout);
+        await storage.saveHistory(history);
       }
 
       // Refresh after uploading so the cloud is the source of truth.
@@ -118,7 +150,8 @@ class WorkoutProvider extends ChangeNotifier {
 
       await storage.saveHistory(history);
     } catch (e) {
-      cloudError = e.toString();
+      cloudError = e is CloudException ? e.message : e.toString();
+      if (!cloud.isLoggedIn) accountEmail = null;
       await storage.saveHistory(history);
     } finally {
       cloudSyncing = false;
@@ -137,8 +170,7 @@ class WorkoutProvider extends ChangeNotifier {
 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       elapsedSeconds++;
-      caloriesBurned =
-          ((elapsedSeconds / 60) * caloriesPerMinute).round();
+      caloriesBurned = ((elapsedSeconds / 60) * caloriesPerMinute).round();
       notifyListeners();
     });
   }
@@ -190,11 +222,7 @@ class WorkoutProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateSet(
-    int exerciseIndex,
-    int setIndex,
-    ExerciseSet newSet,
-  ) {
+  void updateSet(int exerciseIndex, int setIndex, ExerciseSet newSet) {
     if (currentWorkout == null) return;
 
     currentWorkout!.exercises[exerciseIndex].sets[setIndex] = newSet;
@@ -239,10 +267,13 @@ class WorkoutProvider extends ChangeNotifier {
     // Upload in the background if signed in.
     if (cloud.isLoggedIn) {
       try {
-        await cloud.uploadWorkout(finishedWorkout);
+        finishedWorkout.cloudId = await cloud.uploadWorkout(finishedWorkout);
+        await saveHistory();
         cloudError = null;
       } catch (e) {
-        cloudError = 'Saved locally; cloud upload failed: $e';
+        cloudError =
+            'Saved locally; cloud upload failed: '
+            '${e is CloudException ? e.message : e}';
       }
       notifyListeners();
     }
@@ -253,15 +284,26 @@ class WorkoutProvider extends ChangeNotifier {
   }
 
   Future<void> deleteWorkout(int index) async {
-    history.removeAt(index);
+    final workout = history[index];
+    if (workout.cloudId != null) {
+      final pending = await storage.loadPendingDeletes();
+      pending.add(workout.cloudId!);
+      await storage.savePendingDeletes(pending);
+    }
+    history.remove(workout);
     await saveHistory();
     notifyListeners();
+    if (cloud.isLoggedIn) await syncCloudHistory();
   }
 
   Future<void> clearHistory() async {
+    final pending = await storage.loadPendingDeletes();
+    pending.addAll(history.map((workout) => workout.cloudId).whereType<int>());
+    await storage.savePendingDeletes(pending);
     history.clear();
     await saveHistory();
     notifyListeners();
+    if (cloud.isLoggedIn) await syncCloudHistory();
   }
 
   int get totalExercises => currentWorkout?.exercises.length ?? 0;

@@ -302,6 +302,13 @@ def login(
     return token_response(user)
 
 
+@app.get("/auth/me")
+def get_account(
+    current_user: dict[str, Any] = Depends(get_current_user),
+) -> dict[str, Any]:
+    return {"user": current_user}
+
+
 # Protected workout endpoints
 @app.post("/workouts", status_code=status.HTTP_201_CREATED)
 def create_workout(
